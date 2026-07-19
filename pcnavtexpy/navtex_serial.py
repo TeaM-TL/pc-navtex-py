@@ -1,4 +1,7 @@
 import serial
+import time
+
+from navtex_message import NavtexMessage
 
 BUFFER_SIZE = 1024
 
@@ -12,12 +15,14 @@ class NavtexSerial:
             stopbits=serial.STOPBITS_ONE,
             timeout=0.1,
         )
-
+        time.sleep(1.0)   # <<< KLUCZOWE
+        self.ser.write(b"$S\r\n")   # NASA NAVTEX wymaga CRLF
         self.line_buffer = ""
         self.lst_line_buffer = []
         self.is_message = False
         self.is_stored_messages = False
         self.is_version = False
+        self.on_message = None
 
         # callbacki zamiast sygnałów Qt
         self.on_start_message = None
@@ -72,8 +77,6 @@ class NavtexSerial:
                         self.lst_line_buffer = []
                         if self.on_end_of_stored_messages:
                             self.on_end_of_stored_messages()
-                        if self.on_received_message:
-                            self.on_received_message()
                         continue
 
                     if line.startswith("Version"):
@@ -88,9 +91,13 @@ class NavtexSerial:
                     self.line_buffer += c
 
     def handle_message(self, lines):
-        self.debug("Message received:")
-        for l in lines:
-            self.debug(f"   {l}")
-        if self.on_received_message:
-            self.on_received_message()
+        from navtex_message import NavtexMessage
+        msg = NavtexMessage(lines)
+
+        if msg.is_valid():
+            if self.on_message:
+                self.on_message(msg)
+
+            if self.on_received_message:
+                self.on_received_message(msg)
 

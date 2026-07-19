@@ -27,9 +27,11 @@ class NavtexApp(tk.Tk):
         self.receiver.read_data()
         self.after(200, self.poll_serial)
 
-    def on_received_message(self):
+    def on_received_message(self, msg):
         # tu trzeba mieć dostęp do lst_line_buffer – możesz to rozbudować
         # na razie tylko odświeżamy listę z bazy
+        #self.db.store_message(msg)
+        self.tree.insert("", tk.END, values=(msg.code, msg.info, "now"))
         self.refresh_messages()
 
     def refresh_messages(self):
