@@ -30,7 +30,7 @@ class NavtexMessage:
         self.info = ""
         self.body = ""
         self.checkcode = ""
-
+        self.receivedate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.valid = self._parse()
 
     def _parse(self):
