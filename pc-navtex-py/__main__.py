@@ -38,6 +38,7 @@ class NavtexApp(tk.Tk):
         self.db = NavtexDatabase()
         self.receiver = NavtexSerial(port)
         self.receiver.on_received_message = self.on_received_message
+        self.receiver.db = self.db
 
         # self.tree = ttk.Treeview(self, columns=("code", "info", "date"), show="headings")
         # self.tree.heading("code", text="Code")
@@ -75,7 +76,7 @@ class NavtexApp(tk.Tk):
         self.after(200, self.poll_serial)
 
         # --- Details panel ---
-        details_frame = ttk.Frame(self.root)
+        details_frame = ttk.Frame(self)
         details_frame.pack(fill=tk.BOTH, expand=True)
 
         details_scroll = ttk.Scrollbar(details_frame, orient=tk.VERTICAL)

@@ -55,6 +55,8 @@ class NavtexSerial:
         self.on_end_of_stored_messages = None
         self.on_received_version = None
 
+        self.db = None
+
     def debug(self, msg):
         print(f"[DEBUG] {msg}")
 
@@ -74,8 +76,17 @@ class NavtexSerial:
 
             for c in data.decode("latin1"):
                 if c == "\n":
-                    line = self.line_buffer
+                    # line = self.line_buffer
+                    line = self.line_buffer.replace("\r", "")
                     self.line_buffer = ""
+                    line = line.strip()  # usuwa \r, \n, spacje
+
+                    if not line:
+                        continue
+
+                    if line.startswith("a") and line[1:].isdigit():
+                        continue
+
                     self.debug(f"isMessage = {int(self.is_message)}   Line = {line}")
 
                     if line.startswith(">"):
@@ -121,4 +132,6 @@ class NavtexSerial:
         if msg.is_valid():
             if self.on_received_message:
                 self.on_received_message(msg)
+            if self.db:
+                self.db.store_message(msg)
 
