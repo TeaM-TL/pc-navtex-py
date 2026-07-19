@@ -35,11 +35,12 @@ class NavtexDatabase:
         cur = self.conn.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS messages (
-                id INTEGER PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 code TEXT,
                 info TEXT,
                 body TEXT,
                 checkcode TEXT,
+                sum TEXT UNIQUE,
                 receivedate TEXT
             )
         """)
@@ -47,10 +48,18 @@ class NavtexDatabase:
 
     def store_message(self, msg):
         cur = self.conn.cursor()
+        md5 = msg.md5sum()
+
+        # sprawdź, czy istnieje
+        cur.execute("SELECT id FROM messages WHERE sum = ?", (md5,))
+        if cur.fetchone():
+            return  # duplikat → nie zapisujemy
+
         cur.execute("""
-            INSERT INTO messages (code, info, body, checkcode, receivedate)
-            VALUES (?, ?, ?, ?, datetime('now'))
-        """, (msg.code, msg.info, msg.body, msg.checkcode))
+            INSERT INTO messages (code, info, body, checkcode, sum, receivedate)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (msg.code, msg.info, msg.body, msg.checkcode, md5, msg.receivedate))
+
         self.conn.commit()
 
     def list_messages(self):

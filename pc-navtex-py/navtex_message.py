@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import hashlib
 
 class NavtexMessage:
     def __init__(self, lines):
@@ -55,3 +56,5 @@ class NavtexMessage:
     def is_valid(self):
         return self.valid
 
+    def md5sum(self):
+        return hashlib.md5(self.body.encode("utf-8")).hexdigest()
