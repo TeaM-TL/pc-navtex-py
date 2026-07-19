@@ -95,9 +95,6 @@ class NavtexSerial:
         msg = NavtexMessage(lines)
 
         if msg.is_valid():
-            if self.on_message:
-                self.on_message(msg)
-
             if self.on_received_message:
                 self.on_received_message(msg)
 
