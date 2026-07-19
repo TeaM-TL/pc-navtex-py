@@ -40,6 +40,10 @@ class NavtexApp(tk.Tk):
         self.receiver.on_received_message = self.on_received_message
         self.receiver.db = self.db
 
+        # --- Status NAVTEX ---
+        self.status_label = ttk.Label(self, text="NAVTEX nie podłączony", foreground="red")
+        self.status_label.pack(fill=tk.X, pady=3)
+
         # --- Filter bar ---
         filter_frame = ttk.Frame(self)
         filter_frame.pack(fill=tk.X)
@@ -113,7 +117,13 @@ class NavtexApp(tk.Tk):
 
 
     def poll_serial(self):
-        self.receiver.read_data()
+        try:
+            self.receiver.read_data()
+            self.set_navtex_status(True)
+        except Exception as e:
+            print("Błąd NAVTEX:", e)
+            self.set_navtex_status(False)
+
         self.after(200, self.poll_serial)
 
 
@@ -181,6 +191,13 @@ class NavtexApp(tk.Tk):
         for code, info, date in cur.fetchall():
             ch = code[1].upper() if len(code) > 1 else ""
             self.tree.insert("", tk.END, values=(code, info, date), tags=(ch,))
+
+    def set_navtex_status(self, connected: bool):
+        if connected:
+            self.status_label.config(text="NAVTEX podłączony", foreground="green")
+        else:
+            self.status_label.config(text="NAVTEX nie podłączony", foreground="red")
+
 
 
 if __name__ == "__main__":
