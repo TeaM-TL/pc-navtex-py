@@ -39,13 +39,58 @@ class NavtexApp(tk.Tk):
         self.receiver = NavtexSerial(port)
         self.receiver.on_received_message = self.on_received_message
 
-        self.tree = ttk.Treeview(self, columns=("code", "info", "date"), show="headings")
+        # self.tree = ttk.Treeview(self, columns=("code", "info", "date"), show="headings")
+        # self.tree.heading("code", text="Code")
+        # self.tree.heading("info", text="Info")
+        # self.tree.heading("date", text="Received")
+        # self.tree.pack(fill=tk.BOTH, expand=True)
+        # Frame for tree + scrollbar
+        frame = ttk.Frame(self)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Treeview
+        self.tree = ttk.Treeview(
+            frame,
+            columns=("code", "info", "date"),
+            show="headings",
+            yscrollcommand=scrollbar.set
+        )
+
         self.tree.heading("code", text="Code")
         self.tree.heading("info", text="Info")
         self.tree.heading("date", text="Received")
+
         self.tree.pack(fill=tk.BOTH, expand=True)
+        self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
+
+
+        # Connect scrollbar
+        scrollbar.config(command=self.tree.yview)
+
 
         self.after(200, self.poll_serial)
+
+        # --- Details panel ---
+        details_frame = ttk.Frame(self.root)
+        details_frame.pack(fill=tk.BOTH, expand=True)
+
+        details_scroll = ttk.Scrollbar(details_frame, orient=tk.VERTICAL)
+        details_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.details_text = tk.Text(
+            details_frame,
+            wrap="word",
+            yscrollcommand=details_scroll.set,
+            height=12
+        )
+        self.details_text.pack(fill=tk.BOTH, expand=True)
+
+        details_scroll.config(command=self.details_text.yview)
+
 
     def poll_serial(self):
         self.receiver.read_data()
@@ -64,6 +109,28 @@ class NavtexApp(tk.Tk):
         for row in self.db.list_messages():
             _id, code, info, date = row
             self.tree.insert("", tk.END, values=(code, info, date))
+
+    def on_tree_select(self, event):
+        selected = self.tree.selection()
+        if not selected:
+            return
+
+        item = self.tree.item(selected[0])
+        code = item["values"][0]  # msg.code
+
+        # Pobierz pełną treść wiadomości z bazy
+        cur = self.db.conn.cursor()
+        cur.execute("SELECT body FROM messages WHERE code = ?", (code,))
+        row = cur.fetchone()
+
+        self.details_text.delete("1.0", tk.END)
+
+        if row:
+            body = row[0]
+            self.details_text.insert(tk.END, body)
+        else:
+            self.details_text.insert(tk.END, "Brak treści wiadomości.")
+
 
 if __name__ == "__main__":
     app = NavtexApp(port="/dev/ttyUSB0")  # dostosuj do swojego systemu
