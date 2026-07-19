@@ -32,7 +32,7 @@ class NavtexApp(tk.Tk):
         # na razie tylko odświeżamy listę z bazy
         #self.db.store_message(msg)
         self.tree.insert("", tk.END, values=(msg.code, msg.info, "now"))
-        self.refresh_messages()
+        #self.refresh_messages()
 
     def refresh_messages(self):
         for i in self.tree.get_children():
