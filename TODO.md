@@ -2,7 +2,7 @@
 
 ## GUI
 - select USB port from the list
-- message color depends on priority
+- filtering messages
 
 ## Database
 - do not store duplicates (md5sum?)

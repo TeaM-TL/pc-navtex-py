@@ -71,11 +71,11 @@ class NavtexApp(tk.Tk):
         style.configure("C.Treeview", background="#ffe4b3")   # jasnopomarańczowy
         style.configure("D.Treeview", background="#ffd0d0")   # jasnoczerwony
 
-        # # Kolorowanie kanałów NAVTEX
-        # self.tree.tag_configure("A", foreground="blue")
-        # self.tree.tag_configure("B", foreground="green")
-        # self.tree.tag_configure("C", foreground="orange")
-        # self.tree.tag_configure("D", foreground="red")
+        # Kolorowanie kanałów NAVTEX
+        self.tree.tag_configure("A", foreground="blue")
+        self.tree.tag_configure("B", foreground="green")
+        self.tree.tag_configure("C", foreground="orange")
+        self.tree.tag_configure("D", foreground="red")
 
 
         self.tree.heading("code", text="Code")
