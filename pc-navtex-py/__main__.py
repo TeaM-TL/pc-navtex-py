@@ -54,11 +54,18 @@ class NavtexApp(tk.Tk):
             show="headings",
             yscrollcommand=scrollbar.set
         )
-        # Kolorowanie kanałów NAVTEX
-        self.tree.tag_configure("A", foreground="blue")
-        self.tree.tag_configure("B", foreground="green")
-        self.tree.tag_configure("C", foreground="orange")
-        self.tree.tag_configure("D", foreground="red")
+        style = ttk.Style()
+
+        style.configure("A.Treeview", background="#d0e4ff")   # jasnoniebieski
+        style.configure("B.Treeview", background="#d8ffd0")   # jasnozielony
+        style.configure("C.Treeview", background="#ffe4b3")   # jasnopomarańczowy
+        style.configure("D.Treeview", background="#ffd0d0")   # jasnoczerwony
+
+        # # Kolorowanie kanałów NAVTEX
+        # self.tree.tag_configure("A", foreground="blue")
+        # self.tree.tag_configure("B", foreground="green")
+        # self.tree.tag_configure("C", foreground="orange")
+        # self.tree.tag_configure("D", foreground="red")
 
 
         self.tree.heading("code", text="Code")
@@ -98,18 +105,18 @@ class NavtexApp(tk.Tk):
         self.after(200, self.poll_serial)
 
     def on_received_message(self, msg):
-        # tu trzeba mieć dostęp do lst_line_buffer – możesz to rozbudować
-        # na razie tylko odświeżamy listę z bazy
-        #self.db.store_message(msg)
-        channel = msg.code[0].upper() if msg.code else "?"
+        # kanał to druga litera kodu
+        channel = msg.code[1].upper() if len(msg.code) > 1 else "?"
+
+        style = f"{channel}.Treeview"
 
         self.tree.insert(
             "",
             tk.END,
             values=(msg.code, msg.info, "now"),
-            tags=(channel,)
+            tags=(style,)
         )
-        #self.refresh_messages()
+
 
     def refresh_messages(self):
         for i in self.tree.get_children():
