@@ -40,12 +40,6 @@ class NavtexApp(tk.Tk):
         self.receiver.on_received_message = self.on_received_message
         self.receiver.db = self.db
 
-        # self.tree = ttk.Treeview(self, columns=("code", "info", "date"), show="headings")
-        # self.tree.heading("code", text="Code")
-        # self.tree.heading("info", text="Info")
-        # self.tree.heading("date", text="Received")
-        # self.tree.pack(fill=tk.BOTH, expand=True)
-        # Frame for tree + scrollbar
         frame = ttk.Frame(self)
         frame.pack(fill=tk.BOTH, expand=True)
 
@@ -60,6 +54,12 @@ class NavtexApp(tk.Tk):
             show="headings",
             yscrollcommand=scrollbar.set
         )
+        # Kolorowanie kanałów NAVTEX
+        self.tree.tag_configure("A", foreground="blue")
+        self.tree.tag_configure("B", foreground="green")
+        self.tree.tag_configure("C", foreground="orange")
+        self.tree.tag_configure("D", foreground="red")
+
 
         self.tree.heading("code", text="Code")
         self.tree.heading("info", text="Info")
@@ -101,7 +101,14 @@ class NavtexApp(tk.Tk):
         # tu trzeba mieć dostęp do lst_line_buffer – możesz to rozbudować
         # na razie tylko odświeżamy listę z bazy
         #self.db.store_message(msg)
-        self.tree.insert("", tk.END, values=(msg.code, msg.info, "now"))
+        channel = msg.code[0].upper() if msg.code else "?"
+
+        self.tree.insert(
+            "",
+            tk.END,
+            values=(msg.code, msg.info, "now"),
+            tags=(channel,)
+        )
         #self.refresh_messages()
 
     def refresh_messages(self):
