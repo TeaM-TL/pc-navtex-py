@@ -46,6 +46,16 @@ class NavtexApp(tk.Tk):
         # Scrollbar
         scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        # --- Filter bar ---
+        filter_frame = ttk.Frame(self)
+        filter_frame.pack(fill=tk.X)
+
+        ttk.Label(filter_frame, text="Channel:").pack(side=tk.LEFT, padx=5)
+
+        for ch in ("ALL", "A", "B", "C", "D"):
+            btn = ttk.Button(filter_frame, text=ch, width=5,
+                            command=lambda c=ch: self.apply_filter(c))
+            btn.pack(side=tk.LEFT, padx=2)
 
         # Treeview
         self.tree = ttk.Treeview(
@@ -99,10 +109,13 @@ class NavtexApp(tk.Tk):
 
         details_scroll.config(command=self.details_text.yview)
 
+        self.apply_filter("ALL")
+
 
     def poll_serial(self):
         self.receiver.read_data()
         self.after(200, self.poll_serial)
+
 
     def on_received_message(self, msg):
         # kanał to druga litera kodu
@@ -145,6 +158,29 @@ class NavtexApp(tk.Tk):
             self.details_text.insert(tk.END, body)
         else:
             self.details_text.insert(tk.END, "Brak treści wiadomości.")
+
+
+    def apply_filter(self, channel):
+        # wyczyść tabelę
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        cur = self.db.conn.cursor()
+
+        if channel == "ALL":
+            cur.execute("SELECT code, info, receivedate FROM messages ORDER BY receivedate DESC")
+        else:
+            # kanał to DRUGA litera kodu
+            cur.execute("""
+                SELECT code, info, receivedate
+                FROM messages
+                WHERE substr(code, 2, 1) = ?
+                ORDER BY receivedate DESC
+            """, (channel,))
+
+    for code, info, date in cur.fetchall():
+        ch = code[1].upper() if len(code) > 1 else ""
+        self.tree.insert("", tk.END, values=(code, info, date), tags=(ch,))
 
 
 if __name__ == "__main__":
