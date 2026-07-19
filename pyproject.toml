@@ -8,16 +8,18 @@ license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
-
+dependencies = [
+    "Tkinter",
+    "pyserial",
+]
 classifiers=[
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
         "Operating System :: MacOS",
-        "Operating System :: Microsoft :: Windows",
         "Operating System :: Unix",
 ]
 dynamic = ["version"]
