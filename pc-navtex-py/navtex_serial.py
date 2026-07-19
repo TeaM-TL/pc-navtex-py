@@ -76,7 +76,7 @@ class NavtexSerial:
             self.ser = None
             raise
 
-        bytes_available = self.ser.in_waiting
+        # bytes_available = self.ser.in_waiting
         self.debug(f"BytesAvailable = {bytes_available}")
         if bytes_available < 1:
             return

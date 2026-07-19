@@ -124,8 +124,12 @@ class NavtexApp(tk.Tk):
 
     def poll_serial(self):
         try:
-            self.receiver.read_data()
-            self.set_navtex_status(True)
+        # jeśli port jest None → nie próbujemy czytać
+            if self.receiver.ser:
+                self.receiver.read_data()
+                self.set_navtex_status(True)
+            else:
+                self.set_navtex_status(False)
         except Exception as e:
             print("Błąd NAVTEX:", e)
             self.set_navtex_status(False)
