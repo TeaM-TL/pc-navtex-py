@@ -74,7 +74,7 @@ class NavtexSerial:
         except Exception as e:
             print("Błąd odczytu z portu NAVTEX:", e)
             self.ser = None
-            return
+            raise
 
         bytes_available = self.ser.in_waiting
         self.debug(f"BytesAvailable = {bytes_available}")

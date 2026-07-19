@@ -50,7 +50,7 @@ class NavtexApp(tk.Tk):
 
         ttk.Label(filter_frame, text="Channel:").pack(side=tk.LEFT, padx=5)
 
-        for ch in ("ALL", "A", "B", "C", "D"):
+        for ch in ("ALL", "A", "B", "C", "D", "E", "F", "G", "K", "L"):
             btn = ttk.Button(filter_frame, text=ch, width=5,
                             command=lambda c=ch: self.apply_filter(c))
             btn.pack(side=tk.LEFT, padx=2)
@@ -80,6 +80,12 @@ class NavtexApp(tk.Tk):
         self.tree.tag_configure("B", foreground="green")
         self.tree.tag_configure("C", foreground="orange")
         self.tree.tag_configure("D", foreground="red")
+        self.tree.tag_configure("E", foreground="purple")
+        self.tree.tag_configure("F", foreground="brown")
+        self.tree.tag_configure("G", foreground="darkgreen")
+        self.tree.tag_configure("K", foreground="darkblue")
+        self.tree.tag_configure("L", foreground="gray")
+
 
 
         self.tree.heading("code", text="Code")
