@@ -1,0 +1,43 @@
+[project]
+name = "pc-navtex-py"
+description = "GUI for showing messages from NASA PC NAVTEX USB"
+authors = [
+    { name = "Tomasz Łuczak", email = "tlu@team-tl.pl" },
+]
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10"
+
+classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: Unix",
+]
+dynamic = ["version"]
+
+[project.urls]
+Source = "https://github.com/TeaM-TL/pc-navtex-py/"
+Tracker = "https://github.com/TeaM-TL/pc-navtex-py/issues/"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attr = "pc-navtex-py.version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["pc-navtex-py*"]
+
+[project.gui-scripts]
+pc-navtex-py = "pc-navtex-py:__main__"
+
+[project.entry-points]
+gui_scripts = {pc-navtex-py = "pc-navtex-py:__main__"}
