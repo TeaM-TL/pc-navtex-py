@@ -31,36 +31,51 @@ BUFFER_SIZE = 1024
 
 class NavtexSerial:
     def __init__(self, port):
-        self.ser = serial.Serial(
-            port=port,
-            baudrate=38400,          # zostawiasz swoje ustawienia
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            timeout=0.1,
-        )
-        time.sleep(1.0)   # <<< KLUCZOWE
-        self.ser.write(b"$S\r\n")   # NASA NAVTEX wymaga CRLF
-        self.line_buffer = ""
-        self.lst_line_buffer = []
-        self.is_message = False
-        self.is_stored_messages = False
-        self.is_version = False
-        self.on_message = None
+        try:
+            self.ser = serial.Serial(
+                port=port,
+                baudrate=38400,          # zostawiasz swoje ustawienia
+                bytesize=serial.EIGHTBITS,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                timeout=0.1,
+            )
+            time.sleep(1.0)   # <<< KLUCZOWE
+            self.ser.write(b"$S\r\n")   # NASA NAVTEX wymaga CRLF
+            self.line_buffer = ""
+            self.lst_line_buffer = []
+            self.is_message = False
+            self.is_stored_messages = False
+            self.is_version = False
+            self.on_message = None
 
-        # callbacki zamiast sygnałów Qt
-        self.on_start_message = None
-        self.on_end_of_message = None
-        self.on_received_message = None
-        self.on_end_of_stored_messages = None
-        self.on_received_version = None
-
+            # callbacki zamiast sygnałów Qt
+            self.on_start_message = None
+            self.on_end_of_message = None
+            self.on_received_message = None
+            self.on_end_of_stored_messages = None
+            self.on_received_version = None
+        except Exception as e:
+            print("Błąd: nie można otworzyć portu NAVTEX:", e)
+            self.ser = None
         self.db = None
 
+
     def debug(self, msg):
-        print(f"[DEBUG] {msg}")
+        #print(f"[DEBUG] {msg}")
+        x = 1
 
     def read_data(self):
+        if not self.ser:
+            return  # port nie został otwarty
+
+        try:
+            bytes_available = self.ser.in_waiting
+        except Exception as e:
+            print("Błąd odczytu z portu NAVTEX:", e)
+            self.ser = None
+            return
+
         bytes_available = self.ser.in_waiting
         self.debug(f"BytesAvailable = {bytes_available}")
         if bytes_available < 1:

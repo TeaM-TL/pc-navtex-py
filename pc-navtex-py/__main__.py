@@ -40,12 +40,6 @@ class NavtexApp(tk.Tk):
         self.receiver.on_received_message = self.on_received_message
         self.receiver.db = self.db
 
-        frame = ttk.Frame(self)
-        frame.pack(fill=tk.BOTH, expand=True)
-
-        # Scrollbar
-        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         # --- Filter bar ---
         filter_frame = ttk.Frame(self)
         filter_frame.pack(fill=tk.X)
@@ -57,6 +51,12 @@ class NavtexApp(tk.Tk):
                             command=lambda c=ch: self.apply_filter(c))
             btn.pack(side=tk.LEFT, padx=2)
 
+        frame = ttk.Frame(self)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         # Treeview
         self.tree = ttk.Treeview(
             frame,
@@ -178,9 +178,9 @@ class NavtexApp(tk.Tk):
                 ORDER BY receivedate DESC
             """, (channel,))
 
-    for code, info, date in cur.fetchall():
-        ch = code[1].upper() if len(code) > 1 else ""
-        self.tree.insert("", tk.END, values=(code, info, date), tags=(ch,))
+        for code, info, date in cur.fetchall():
+            ch = code[1].upper() if len(code) > 1 else ""
+            self.tree.insert("", tk.END, values=(code, info, date), tags=(ch,))
 
 
 if __name__ == "__main__":
