@@ -25,7 +25,10 @@ SOFTWARE.
 import sqlite3
 from pathlib import Path
 
+
 class NavtexDatabase:
+    """Class for database connection and use"""
+
     def __init__(self, path="navtex.db"):
         self.path = Path(path)
         self.conn = sqlite3.connect(self.path)
@@ -47,6 +50,7 @@ class NavtexDatabase:
         self.conn.commit()
 
     def store_message(self, msg):
+        """Store in database"""
         cur = self.conn.cursor()
         md5 = msg.md5sum()
 
@@ -55,15 +59,20 @@ class NavtexDatabase:
         if cur.fetchone():
             return  # duplikat → nie zapisujemy
 
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO messages (code, info, body, checkcode, sum, receivedate)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (msg.code, msg.info, msg.body, msg.checkcode, md5, msg.receivedate))
+        """,
+            (msg.code, msg.info, msg.body, msg.checkcode, md5, msg.receivedate),
+        )
 
         self.conn.commit()
 
     def list_messages(self):
+        """Get all from database"""
         cur = self.conn.cursor()
-        cur.execute("SELECT id, code, info, receivedate FROM messages ORDER BY receivedate DESC")
+        cur.execute(
+            "SELECT id, code, info, receivedate FROM messages ORDER BY receivedate DESC"
+        )
         return cur.fetchall()
-

@@ -22,26 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import serial
 import time
+import serial
 
 from navtex_message import NavtexMessage
 
 BUFFER_SIZE = 1024
 
+
 class NavtexSerial:
+    """NAXTEX serial port"""
+
     def __init__(self, port):
         try:
             self.ser = serial.Serial(
                 port=port,
-                baudrate=38400,          # zostawiasz swoje ustawienia
+                baudrate=38400,
                 bytesize=serial.EIGHTBITS,
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
                 timeout=0.1,
             )
-            time.sleep(1.0)   # <<< KLUCZOWE
-            self.ser.write(b"$S\r\n")   # NASA NAVTEX wymaga CRLF
+            time.sleep(1.0)  # sleep before start
+            self.ser.write(b"$S\r\n")  # NASA NAVTEX requires CRLF
             self.line_buffer = ""
             self.lst_line_buffer = []
             self.is_message = False
@@ -49,34 +52,32 @@ class NavtexSerial:
             self.is_version = False
             self.on_message = None
 
-            # callbacki zamiast sygnałów Qt
             self.on_start_message = None
             self.on_end_of_message = None
             self.on_received_message = None
             self.on_end_of_stored_messages = None
             self.on_received_version = None
         except Exception as e:
-            print("Błąd: nie można otworzyć portu NAVTEX:", e)
+            print("Error: cannot open NAVTEX serial port:", e)
             self.ser = None
         self.db = None
 
-
     def debug(self, msg):
-        #print(f"[DEBUG] {msg}")
+        """for debug: print(f"[DEBUG] {msg}")"""
         x = 1
 
     def read_data(self):
+        """Read data from port"""
         if not self.ser:
-            return  # port nie został otwarty
+            return  # port has not opened
 
         try:
             bytes_available = self.ser.in_waiting
         except Exception as e:
-            print("Błąd odczytu z portu NAVTEX:", e)
+            print("Error reading from NAVTEX port:", e)
             self.ser = None
             raise
 
-        # bytes_available = self.ser.in_waiting
         self.debug(f"BytesAvailable = {bytes_available}")
         if bytes_available < 1:
             return
@@ -91,7 +92,6 @@ class NavtexSerial:
 
             for c in data.decode("latin1"):
                 if c == "\n":
-                    # line = self.line_buffer
                     line = self.line_buffer.replace("\r", "")
                     self.line_buffer = ""
                     line = line.strip()  # usuwa \r, \n, spacje
@@ -141,7 +141,7 @@ class NavtexSerial:
                     self.line_buffer += c
 
     def handle_message(self, lines):
-        from navtex_message import NavtexMessage
+        """handle message"""
         msg = NavtexMessage(lines)
 
         if msg.is_valid():
@@ -149,4 +149,3 @@ class NavtexSerial:
                 self.on_received_message(msg)
             if self.db:
                 self.db.store_message(msg)
-

@@ -25,7 +25,10 @@ SOFTWARE.
 from datetime import datetime
 import hashlib
 
+
 class NavtexMessage:
+    """Class for messages"""
+
     def __init__(self, lines):
         self.lines = lines
         self.code = ""
@@ -39,18 +42,16 @@ class NavtexMessage:
         if not self.lines:
             return False
 
-        # bardzo uproszczone – odpowiednik PCNMessage
-        header = self.lines[0]  # linia z '>'
-        footer = self.lines[-1] # linia z '<'
+        header = self.lines[0]  # row with '>'
+        footer = self.lines[-1]  # wor with '<'
 
         self.code = header[1:].strip() if header.startswith(">") else ""
         self.checkcode = footer[1:].strip() if footer.startswith("<") else ""
 
-        # środek wiadomości
+        # message content
         middle = self.lines[1:-1]
         self.body = "\n".join(middle)
 
-        # info można wyciągnąć z pierwszej linii środka, jak w oryginale
         self.info = middle[0] if middle else ""
 
         return bool(self.code)
@@ -59,4 +60,5 @@ class NavtexMessage:
         return self.valid
 
     def md5sum(self):
+        """MD5 calculation for avoid duplicate in database"""
         return hashlib.md5(self.body.encode("utf-8")).hexdigest()
