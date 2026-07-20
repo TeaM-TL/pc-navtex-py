@@ -40,20 +40,33 @@ class NavtexApp(tk.Tk):
         self.receiver.on_received_message = self.on_received_message
         self.receiver.db = self.db
 
+        # --- Główny układ: lewa kolumna + prawa kolumna ---
+        main_frame = ttk.Frame(self)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        left_frame = ttk.Frame(main_frame)
+        left_frame.pack(side=tk.LEFT, fill=tk.Y)
+
+        right_frame = ttk.Frame(main_frame)
+        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
         # --- Status NAVTEX ---
-        self.status_label = ttk.Label(self, text="NAVTEX nie podłączony", foreground="red")
-        self.status_label.pack(fill=tk.X, pady=3)
+        self.status_label = ttk.Label(left_frame, text="NAVTEX nie podłączony", foreground="red")
+        self.status_label.pack(anchor="w", pady=5, padx=5)
+
 
         # --- Filter bar ---
-        filter_frame = ttk.Frame(self)
+        filter_frame = ttk.Frame(left_frame)
+        filter_frame.pack(anchor="w", pady=5, padx=5)
+
         filter_frame.pack(fill=tk.X)
 
         ttk.Label(filter_frame, text="Channel:").pack(side=tk.LEFT, padx=5)
 
         for ch in ("ALL", "A", "B", "C", "D", "E", "F", "G", "K", "L"):
-            btn = ttk.Button(filter_frame, text=ch, width=5,
-                            command=lambda c=ch: self.apply_filter(c))
-            btn.pack(side=tk.LEFT, padx=2)
+            btn = ttk.Button(filter_frame, text=ch, width=4,
+                     command=lambda c=ch: self.apply_filter(c))
+            btn.pack(side=tk.TOP, anchor="w", pady=2)
 
         frame = ttk.Frame(self)
         frame.pack(fill=tk.BOTH, expand=True)
@@ -62,14 +75,22 @@ class NavtexApp(tk.Tk):
         scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         # Treeview
+        self.tree = ttk.Treeview(right_frame, 
+            columns=("code", "info", "date"),
+            show="headings"
+        )
+        self.tree.pack(fill=tk.BOTH, expand=True)
+
         self.tree = ttk.Treeview(
             frame,
             columns=("code", "info", "date"),
             show="headings",
             yscrollcommand=scrollbar.set
         )
-        style = ttk.Style()
+                # Connect scrollbar
+        scrollbar.config(command=self.tree.yview)
 
+        style = ttk.Style()
         style.configure("A.Treeview", background="#d0e4ff")   # jasnoniebieski
         style.configure("B.Treeview", background="#d8ffd0")   # jasnozielony
         style.configure("C.Treeview", background="#ffe4b3")   # jasnopomarańczowy
@@ -87,7 +108,6 @@ class NavtexApp(tk.Tk):
         self.tree.tag_configure("L", foreground="gray")
 
 
-
         self.tree.heading("code", text="Code")
         self.tree.heading("info", text="Info")
         self.tree.heading("date", text="Received")
@@ -96,14 +116,10 @@ class NavtexApp(tk.Tk):
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
 
-        # Connect scrollbar
-        scrollbar.config(command=self.tree.yview)
-
-
         self.after(200, self.poll_serial)
 
         # --- Details panel ---
-        details_frame = ttk.Frame(self)
+        details_frame = ttk.Frame(right_frame)
         details_frame.pack(fill=tk.BOTH, expand=True)
 
         details_scroll = ttk.Scrollbar(details_frame, orient=tk.VERTICAL)
