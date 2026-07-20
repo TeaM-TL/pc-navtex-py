@@ -37,9 +37,10 @@ build-backend = "setuptools.build_meta"
 version = { attr = "pc_navtex_py.version.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["pc-navtex-py*"]
+include = ["pc_navtex_py*"]
 
 [project.gui-scripts]
 pc-navtex-py = "pc_navtex_py:__main__"
 
-
+[project.entry-points]
+gui_scripts = {pc_navtex_py = "pc_navtex_py:__main__"}

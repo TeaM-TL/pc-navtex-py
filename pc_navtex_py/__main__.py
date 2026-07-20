@@ -336,6 +336,6 @@ Warm Front - W-FRONT / WFNT
         text.config(state="disabled")
 
 
-if __name__ == "__main__":
-    app = NavtexApp(port="/dev/ttyUSB0")  # should be from the list
-    app.mainloop()
+# if __name__ == "__main__":
+app = NavtexApp(port="/dev/ttyUSB0")  # should be from the list
+app.mainloop()
