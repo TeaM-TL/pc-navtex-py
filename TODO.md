@@ -1,10 +1,5 @@
 # ToDo
 
-## GUI
+- restart read after reconnection
 - select USB port from the list
-
-## Database
-
-## Infrastructure
-- make app
-- add into PyPi
+- run on MacOS - requires select USB port
