@@ -9,18 +9,19 @@ license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "Tkinter",
     "pyserial",
 ]
 classifiers=[
-        "Development Status :: 4 - Beta",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13",
-        "Operating System :: MacOS",
-        "Operating System :: Unix",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+    "Environment :: GUI :: Tk",
+    "Topic :: Communications :: NAVTEX",
 ]
 dynamic = ["version"]
 
@@ -33,13 +34,12 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
-version = { attr = "pc-navtex-py.version.__version__" }
+version = { attr = "pc_navtex_py.version.__version__" }
 
 [tool.setuptools.packages.find]
 include = ["pc-navtex-py*"]
 
 [project.gui-scripts]
-pc-navtex-py = "pc-navtex-py:__main__"
+pc-navtex-py = "pc_navtex_py:__main__"
 
-[project.entry-points]
-gui_scripts = {pc-navtex-py = "pc-navtex-py:__main__"}
+

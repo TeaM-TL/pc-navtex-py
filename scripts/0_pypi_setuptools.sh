@@ -3,7 +3,7 @@
 rm -rf ../build/*
 rm -rf ../pc-navtex-py/__pycache__
 CWD=`pwd`
-
+cd ..
 echo "- PyPI ---"
 python -m build --wheel
 cd $CWD
