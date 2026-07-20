@@ -20,8 +20,6 @@ classifiers=[
     "Programming Language :: Python :: 3.13",
     "Operating System :: MacOS",
     "Operating System :: Unix",
-    "Environment :: GUI :: Tk",
-    "Topic :: Communications :: NAVTEX",
 ]
 dynamic = ["version"]
 
